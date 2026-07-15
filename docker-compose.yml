@@ -1,0 +1,56 @@
+name: legal_rag
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: legal_rag_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=raguser
+      - POSTGRES_PASSWORD=ragpassword
+      - POSTGRES_DB=legal_rag
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - legal_rag_net
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: legal_rag_api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Syncs your local code to the container so it hot-reloads on save
+      - ./api:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      # Local Database connection string
+      - DATABASE_URL=postgresql://raguser:ragpassword@db:5432/legal_rag
+      
+      # Pinecone & Voyage AI credentials
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME:-legal-contract-chunks-voyage}
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+      
+      # Model registry credentials 
+      # (Use GEMINI_API_KEY since google-genai prefers it, but keeping GOOGLE_API_KEY for legacy support)
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY} 
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    networks:
+      - legal_rag_net
+    depends_on:
+      - db
+    restart: unless-stopped
+
+networks:
+  legal_rag_net:
+    driver: bridge
+
+volumes:
+  pgdata:
