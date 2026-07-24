@@ -146,6 +146,34 @@ def get_conversation_messages(
         raise HTTPException(status_code=404, detail="Conversation not found")
     return entries
 
+@app.delete("/api/conversations/{conversation_id}")
+def delete_conversation(
+    conversation_id: str, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # 1. Query records associated with this conversation ID AND the current logged-in user
+    records = (
+        db.query(ConversationHistory)
+        .filter(
+            ConversationHistory.conversation_id == conversation_id,
+            ConversationHistory.user_id == current_user.id
+        )
+        .all()
+    )
+    
+    if not records:
+        raise HTTPException(status_code=404, detail="Conversation not found or access denied")
+    
+    # 2. Delete the records
+    for record in records:
+        db.delete(record)
+        
+    # 3. Commit to Neon DB to make deletion permanent!
+    db.commit()
+    
+    return {"status": "success", "message": f"Conversation {conversation_id} deleted"}
+
 @app.post("/auth/login", response_model=Token)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
