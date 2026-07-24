@@ -69,7 +69,7 @@ def get_llm(model_name: str):
 _PROMPT = ChatPromptTemplate.from_messages([
     ("system", """You are a legal assistant helping analyze contracts for a law firm.
 Answer using ONLY the provided context from the firm's contract repository.
-Cite the contract category and source file in your answer.
+Cite the contract category and source file in your answer; do not write any source in the answer just write the answer.
 If the answer is not in the context, say so clearly — do not guess."""),
     ("human", "Context:\n{context}\n\nQuestion: {question}"),
 ])
