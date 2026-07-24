@@ -162,14 +162,15 @@ def delete_conversation(
         .all()
     )
     
+    # 💥 THE FIX: If it's already gone or never existed, just tell the frontend "Success"
     if not records:
-        raise HTTPException(status_code=404, detail="Conversation not found or access denied")
+        return {"status": "success", "message": "Already deleted or not found"}
     
     # 2. Delete the records
     for record in records:
         db.delete(record)
         
-    # 3. Commit to Neon DB to make deletion permanent!
+    # 3. Commit to DB to make deletion permanent!
     db.commit()
     
     return {"status": "success", "message": f"Conversation {conversation_id} deleted"}
