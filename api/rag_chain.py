@@ -69,11 +69,11 @@ def get_llm(model_name: str):
 _PROMPT = ChatPromptTemplate.from_messages([
     ("system", """You are a legal assistant helping analyze contracts for a law firm.
 Answer using ONLY the provided context from the firm's contract repository.
-Cite the contract category and source file in your answer; do not write any source in the answer just write the answer.
+Provide a clear, concise answer. If you need to cite a source, use short numerical brackets (e.g., [1], [2]). 
+NEVER include long filenames, file paths, or raw metadata in your text.
 If the answer is not in the context, say so clearly — do not guess."""),
     ("human", "Context:\n{context}\n\nQuestion: {question}"),
 ])
-
 # HyDE: generates a hypothetical contract clause from the question. That clause
 # (not the raw question) gets embedded for dense retrieval -- a short or casually
 # phrased question and the contract clause that answers it are worded very
