@@ -25,7 +25,7 @@ from config import (
 _MODEL_REGISTRY = {
     # 1. Google Gemini (Generous free tier)
     "gemini-2.5-flash": lambda: ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+        model="gemini-3.1-flash-lite",
         max_output_tokens=LLM_NUM_PREDICT,
         google_api_key=GOOGLE_API_KEY,
     ),
