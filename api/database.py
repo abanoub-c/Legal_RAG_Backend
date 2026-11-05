@@ -11,7 +11,12 @@ DATABASE_URL = os.getenv(
     "postgresql://raguser:ragpassword@localhost:5432/financial_rag"
 )
 
-engine       = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,   # test each connection before using it; replace it if dead
+    pool_recycle=300,     # never reuse a connection older than 5 minutes
+    connect_args={"connect_timeout": 10},
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base         = declarative_base()
 
