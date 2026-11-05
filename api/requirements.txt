@@ -8,7 +8,7 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 bcrypt==4.0.1
-sqlalchemy
+sqlalchemy>=2.0,<2.1
 psycopg2-binary
 pinecone
 langchain_google_genai
